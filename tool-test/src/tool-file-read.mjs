@@ -1,7 +1,7 @@
 /*
  * @Date: 2026-03-09 10:08:19
  * @LastEditors: zhujinyi
- * @LastEditTime: 2026-04-03 17:37:06
+ * @LastEditTime: 2026-05-22 14:16:37
  */
 import "dotenv/config";
 import { ChatOpenAI } from "@langchain/openai";
@@ -41,10 +41,11 @@ const readFileTool = tool(
   },
 );
 
+// 4.绑定工具到模型
 const tools = [readFileTool];
-
 const modelWithTools = model.bindTools(tools);
 
+// 5.构建初始消息
 const messages = [
   new SystemMessage(`你是一个代码助手，可以使用工具读取文件并解释代码。
 
@@ -59,6 +60,7 @@ const messages = [
   new HumanMessage("请读取 src/tool-file-read.mjs 文件内容并解释代码"),
 ];
 
+// 6.工具调用
 let response = await modelWithTools.invoke(messages);
 // console.log(response);
 messages.push(response);

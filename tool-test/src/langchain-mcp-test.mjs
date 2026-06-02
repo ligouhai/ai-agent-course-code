@@ -1,34 +1,36 @@
 /*
  * @Date: 2026-04-13 10:59:38
  * @LastEditors: zhujinyi
- * @LastEditTime: 2026-04-13 11:48:32
+ * @LastEditTime: 2026-05-22 15:33:00
  */
-import "dotenv/config";
-import { MultiServerMCPClient } from "@langchain/mcp-adapters";
-import { ChatOpenAI } from "@langchain/openai";
-import chalk from "chalk";
+import 'dotenv/config';
+import { MultiServerMCPClient } from '@langchain/mcp-adapters';
+import { ChatOpenAI } from '@langchain/openai';
+import chalk from 'chalk';
 import {
   HumanMessage,
   ToolMessage,
-  SystemMessage,
-} from "@langchain/core/messages";
+  SystemMessage
+} from '@langchain/core/messages';
 
 const model = new ChatOpenAI({
-  modelName: "qwen-plus",
+  modelName: 'qwen-plus',
   apiKey: process.env.OPENAI_API_KEY,
   temperature: 0,
   configuration: {
-    baseURL: process.env.OPENAI_BASE_URL,
-  },
+    baseURL: process.env.OPENAI_BASE_URL
+  }
 });
 
 const mcpClient = new MultiServerMCPClient({
   mcpServers: {
-    "my-mcp-server": {
-      command: "node",
-      args: ["/Users/legalhigh/Code/ai-code/tool-test/src/my-mcp-server.mjs"],
-    },
-  },
+    'my-mcp-server': {
+      command: 'node',
+      args: [
+        '/Users/LegalHigh/Code/AI学习/ai-agent-course-code/tool-test/src/my-mcp-server.mjs'
+      ]
+    }
+  }
 });
 
 const tools = await mcpClient.getTools();
@@ -37,10 +39,10 @@ const modelWithTools = model.bindTools(tools);
 async function runAgentWithTools(query, maxIterations = 30) {
   const messages = [
     new SystemMessage(resourceContent),
-    new HumanMessage(query),
+    new HumanMessage(query)
   ];
   for (let i = 0; i < maxIterations; i++) {
-    console.log(chalk.bgGreen("⏳ 正在等待 AI 思考..."));
+    console.log(chalk.bgGreen('⏳ 正在等待 AI 思考...'));
     const response = await modelWithTools.invoke(messages);
     messages.push(response);
 
@@ -50,12 +52,12 @@ async function runAgentWithTools(query, maxIterations = 30) {
       return response.content;
     }
     console.log(
-      chalk.bgBlue(`🔍 检测到 ${response.tool_calls.length} 个工具调用`),
+      chalk.bgBlue(`🔍 检测到 ${response.tool_calls.length} 个工具调用`)
     );
     console.log(
       chalk.bgBlue(
-        `🔍 工具调用: ${response.tool_calls.map((t) => t.name).join(", ")}`,
-      ),
+        `🔍 工具调用: ${response.tool_calls.map((t) => t.name).join(', ')}`
+      )
     );
     // 执行工具调用
     for (const toolCall of response.tool_calls) {
@@ -63,7 +65,7 @@ async function runAgentWithTools(query, maxIterations = 30) {
       if (foundTool) {
         const result = await foundTool.invoke(toolCall.args);
         messages.push(
-          new ToolMessage({ content: result, tool_call_id: toolCall.id }),
+          new ToolMessage({ content: result, tool_call_id: toolCall.id })
         );
       }
     }
@@ -73,7 +75,7 @@ async function runAgentWithTools(query, maxIterations = 30) {
 
 const res = await mcpClient.listResources();
 
-let resourceContent = "";
+let resourceContent = '';
 for (const [serverName, resources] of Object.entries(res)) {
   console.log(serverName);
   for (const resource of resources) {
@@ -83,6 +85,6 @@ for (const [serverName, resources] of Object.entries(res)) {
 }
 console.log(res);
 
-// await runAgentWithTools("查一下用户 002 的信息");
-await runAgentWithTools("MCP Server的使用指南是什么");
+// await runAgentWithTools('查一下用户 002 的信息');
+await runAgentWithTools('MCP Server的使用指南是什么');
 await mcpClient.close();

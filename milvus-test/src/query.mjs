@@ -1,7 +1,7 @@
 /*
  * @Date: 2026-04-23 20:30:13
  * @LastEditors: zhujinyi
- * @LastEditTime: 2026-04-23 20:40:29
+ * @LastEditTime: 2026-05-28 17:42:41
  */
 /*
  * @Date: 2026-04-23 20:30:13
@@ -15,6 +15,7 @@ import { OpenAIEmbeddings } from '@langchain/openai';
 const COLLECTION_NAME = 'ai_diary';
 const VECTOR_DIMENSION = 1024;
 
+// 初始化 Embeddings 模型
 const embeddings = new OpenAIEmbeddings({
   modelName: process.env.EMBEDDINGS_MODEL_NAME,
   apiKey: process.env.OPENAI_API_KEY,
@@ -24,14 +25,17 @@ const embeddings = new OpenAIEmbeddings({
   dimensions: VECTOR_DIMENSION
 });
 
+// 初始化 Milvus 客户端
 const milvusClient = new MilvusClient({
   address: 'localhost:19530'
 });
 
+// 获取文本的向量嵌入
 async function getEmbeddings(text) {
   return await embeddings.embedQuery(text);
 }
 
+// 主函数
 async function main() {
   try {
     console.log('Connecting to Milvus...');
@@ -39,7 +43,8 @@ async function main() {
     console.log('✓ Connected');
 
     console.log('Searching for data...');
-    const query = '我做饭或学习的日记';
+    // const query = '我做饭或学习的日记';
+    const query = '我的户外运动日记';
     console.log(`Query: ${query}`);
 
     const queryVector = await getEmbeddings(query);

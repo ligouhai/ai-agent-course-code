@@ -1,15 +1,16 @@
 /*
  * @Date: 2026-04-16 18:36:17
  * @LastEditors: zhujinyi
- * @LastEditTime: 2026-04-16 18:52:09
+ * @LastEditTime: 2026-05-26 10:53:34
  */
 import "dotenv/config";
 import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
 import { MemoryVectorStore } from "@langchain/classic/vectorstores/memory";
 import { Document } from "@langchain/core/documents";
 
+// 1) 初始化聊天模型：用于最后基于检索上下文生成回答
 const model = new ChatOpenAI({
-  modelName: "qwen-plus",
+  modelName: process.env.MODEL_NAME,
   apiKey: process.env.OPENAI_API_KEY,
   temperature: 0,
   configuration: {
@@ -17,6 +18,7 @@ const model = new ChatOpenAI({
   },
 });
 
+// 2) 初始化向量模型：把文本转换成可计算相似度的向量
 const embeddings = new OpenAIEmbeddings({
   modelName: process.env.EMBEDDINGS_MODEL_NAME,
   apiKey: process.env.OPENAI_API_KEY,
@@ -25,6 +27,7 @@ const embeddings = new OpenAIEmbeddings({
   },
 });
 
+// 3) 准备原始知识库文档（这里直接写在代码里，真实项目一般来自文件/数据库）
 const documents = [
   new Document({
     pageContent: `光光是一个活泼开朗的小男孩，他有一双明亮的大眼睛，总是带着灿烂的笑容。光光最喜欢的事情就是和朋友们一起玩耍，他特别擅长踢足球，每次在球场上奔跑时，就像一道阳光一样充满活力。`,
@@ -91,11 +94,13 @@ const documents = [
   }),
 ];
 
+// 4) 构建内存向量库：会对 documents 做 embedding，并把向量+原文存入 MemoryVectorStore
 const vectorStore = await MemoryVectorStore.fromDocuments(
   documents,
   embeddings,
 );
 
+// 5) 创建检索器：每次查询返回最相关的前 3 条文档
 const retriever = vectorStore.asRetriever({ k: 3 });
 
 const questions = ["东东和光光是怎么成为朋友的？"];
@@ -104,12 +109,12 @@ for (const question of questions) {
   console.log(`问题: ${question}`);
   console.log("=".repeat(80));
 
-  //   使用 retriever 获取相关文档
+  // 6) 语义检索：根据问题在向量库里找到最相关文档片段
   const retrievedDocuments = await retriever.invoke(question);
 
-  //   使用 similaritySearchWithScore 获取相关文档及其相似度
+  // 7) 同时拿到检索分数：便于观察每条命中的相似度
   const scoreResults = await vectorStore.similaritySearchWithScore(question, 3);
-
+  console.log(scoreResults);
   // 打印用到的文档和相似度评分
   console.log("\n【检索到的文档及相似度评分】");
   retrievedDocuments.forEach((doc, index) => {
@@ -135,10 +140,12 @@ for (const question of questions) {
     );
   });
 
+  // 8) 组装上下文：把检索到的片段拼到 prompt 中，交给大模型参考
   const context = retrievedDocuments
     .map((doc, i) => `[片段${i + 1}]\n${doc.pageContent}`)
     .join("\n\n━━━━━\n\n");
 
+  // 9) 构建提示词：限制回答要“基于检索结果”，降低幻觉
   const prompt = `你是一个讲友情故事的老师。基于以下故事片段回答问题，用温暖生动的语言。如果故事中没有提到，就说"这个故事里还没有提到这个细节"。
 
 故事片段:
@@ -149,7 +156,19 @@ ${context}
 老师的回答:`;
 
   console.log("\n【AI 回答】");
-  const response = await model.invoke(prompt);
-  console.log(response.content);
-  console.log("\n");
+  // 10) 生成最终答案：把“问题 + 检索上下文”发给大模型
+
+  try {
+    const stream = await model.stream(prompt);
+    for await (const chunk of stream) {
+      process.stdout.write(chunk.content);
+    }
+  } catch (error) {
+    console.error("调用大模型失败：", error.message);
+  }
+
+  // const response = await model.invoke(prompt);
+
+  // console.log(response.content);
+  // console.log("\n");
 }

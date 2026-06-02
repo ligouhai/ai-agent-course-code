@@ -5,6 +5,7 @@ import { OpenAIEmbeddings, ChatOpenAI } from '@langchain/openai';
 const COLLECTION_NAME = 'ai_diary';
 const VECTOR_DIMENSION = 1024;
 
+// 初始化大模型
 const model = new ChatOpenAI({
   modelName: process.env.MODEL_NAME,
   apiKey: process.env.OPENAI_API_KEY,
@@ -14,6 +15,7 @@ const model = new ChatOpenAI({
   temperature: 0.7
 });
 
+// 初始化向量模型
 const embeddings = new OpenAIEmbeddings({
   modelName: process.env.EMBEDDINGS_MODEL_NAME,
   apiKey: process.env.OPENAI_API_KEY,
@@ -23,17 +25,18 @@ const embeddings = new OpenAIEmbeddings({
   dimensions: VECTOR_DIMENSION
 });
 
+// 初始化 Milvus 客户端
 const milvusClient = new MilvusClient({
   address: 'localhost:19530'
 });
 
-// 获取文本向量的输入
+// 获取文本的向量嵌入
 async function getEmbeddings(text) {
   return await embeddings.embedQuery(text);
 }
 
 // 从Milvus中检索相关日记条目
-async function retrieveRelevantDiaryEntries(query, k = 2) {
+async function huri(query, k = 2) {
   try {
     const queryVector = await getEmbeddings(query);
     const result = await milvusClient.search({

@@ -1,7 +1,7 @@
 /*
  * @Date: 2026-05-21 14:54:19
  * @LastEditors: zhujinyi
- * @LastEditTime: 2026-05-21 14:56:42
+ * @LastEditTime: 2026-05-25 15:14:49
  */
 import 'dotenv/config';
 import { StructuredOutputParser } from '@langchain/core/output_parsers';
@@ -9,7 +9,11 @@ import { PromptTemplate } from '@langchain/core/prompts';
 import { ChatOpenAI } from '@langchain/openai';
 import { z } from 'zod';
 import { RunnableSequence } from '@langchain/core/runnables';
+import { ChatAlibabaTongyi } from '@langchain/community/chat_models/alibaba_tongyi';
 
+import { Milvus } from '@langchain/community/vectorstores/milvus';
+
+ChatAlibabaTongyi.form;
 const model = new ChatOpenAI({
   modelName: process.env.MODEL_NAME,
   temperature: 0,

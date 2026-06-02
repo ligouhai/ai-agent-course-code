@@ -1,37 +1,37 @@
 /*
  * @Date: 2026-03-10 16:04:35
  * @LastEditors: zhujinyi
- * @LastEditTime: 2026-04-10 15:54:12
+ * @LastEditTime: 2026-05-22 14:47:17
  */
-import "dotenv/config";
-import { ChatOpenAI } from "@langchain/openai";
+import 'dotenv/config';
+import { ChatOpenAI } from '@langchain/openai';
 import {
   HumanMessage,
   SystemMessage,
-  ToolMessage,
-} from "@langchain/core/messages";
+  ToolMessage
+} from '@langchain/core/messages';
 import {
   readFileTool,
   writeFileTool,
   executeCommandTool,
-  listDirectoryTool,
-} from "./all-tools.mjs";
-import chalk from "chalk";
+  listDirectoryTool
+} from './all-tools.mjs';
+import chalk from 'chalk';
 
 const model = new ChatOpenAI({
-  modelName: "qwen-plus",
+  modelName: 'qwen-plus',
   apiKey: process.env.OPENAI_API_KEY,
   temperature: 0,
   configuration: {
-    baseURL: process.env.OPENAI_BASE_URL,
-  },
+    baseURL: process.env.OPENAI_BASE_URL
+  }
 });
 
 const tools = [
   readFileTool,
   writeFileTool,
   executeCommandTool,
-  listDirectoryTool,
+  listDirectoryTool
 ];
 
 // 绑定工具到模型
@@ -57,13 +57,13 @@ async function runAgentWithTools(query, maxIterations = 30) {
         这样就对了！workingDirectory 参数会自动切换到 react-todo-app ,直接执行命令即可
 
         回复要简洁，只说做了什么
-    `,
+    `
     ),
-    new HumanMessage(query),
+    new HumanMessage(query)
   ];
 
   for (let i = 0; i < maxIterations; i++) {
-    console.log(chalk.bgGreen("⏳ 正在等待 AI 思考..."));
+    console.log(chalk.bgGreen('⏳ 正在等待 AI 思考...'));
     const response = await modelWithTools.invoke(messages);
     messages.push(response);
 
@@ -79,7 +79,7 @@ async function runAgentWithTools(query, maxIterations = 30) {
       if (foundTool) {
         const result = await foundTool.invoke(toolCall.args);
         messages.push(
-          new ToolMessage({ content: result, tool_call_id: toolCall.id }),
+          new ToolMessage({ content: result, tool_call_id: toolCall.id })
         );
       }
     }

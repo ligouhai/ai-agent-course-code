@@ -143,7 +143,6 @@ async function main() {
 
     const diaryData = await Promise.all(
       diaryContents.map(async (diary) => {
-        const vector = await getEmbeddings(diary.content);
         return {
           ...diary,
           vector: await getEmbeddings(diary.content)
