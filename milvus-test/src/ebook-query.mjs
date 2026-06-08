@@ -1,11 +1,11 @@
 /*
  * @Date: 2026-05-07 10:07:27
  * @LastEditors: zhujinyi
- * @LastEditTime: 2026-05-07 10:13:52
+ * @LastEditTime: 2026-06-08 16:48:12
  */
-import 'dotenv/config';
-import { MilvusClient, MetricType } from '@zilliz/milvus2-sdk-node';
 import { OpenAIEmbeddings } from '@langchain/openai';
+import { MetricType, MilvusClient } from '@zilliz/milvus2-sdk-node';
+import 'dotenv/config';
 
 const COLLECTION_NAME = 'ebook_collection';
 const VECTOR_DIMENSION = 1024;
@@ -48,7 +48,7 @@ async function main() {
 
     // 向量搜索
     console.log('Searching for data...');
-    const query = '虚竹会什么武功？';
+    const query = '虚竹跟童姥什么关系？';
     console.log(`Query: ${query}\n`);
 
     const queryVector = await getEmbeddings(query);

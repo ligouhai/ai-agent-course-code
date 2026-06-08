@@ -1,11 +1,11 @@
 /*
  * @Date: 2026-05-07 10:07:27
  * @LastEditors: zhujinyi
- * @LastEditTime: 2026-05-07 10:43:15
+ * @LastEditTime: 2026-06-08 16:57:14
  */
+import { ChatOpenAI, OpenAIEmbeddings } from '@langchain/openai';
+import { MetricType, MilvusClient } from '@zilliz/milvus2-sdk-node';
 import 'dotenv/config';
-import { MilvusClient, MetricType } from '@zilliz/milvus2-sdk-node';
-import { OpenAIEmbeddings, ChatOpenAI } from '@langchain/openai';
 
 const COLLECTION_NAME = 'ebook_collection';
 const VECTOR_DIMENSION = 1024;
@@ -132,7 +132,7 @@ async function main() {
       console.log('✓ 集合已处于加载状态\n');
     }
 
-    const question = '虚竹喜欢哪个女的？';
+    const question = '小龙女被怎么了？';
     await answerQuestion(question, 5);
   } catch (error) {
     console.error('错误:', error.message);
