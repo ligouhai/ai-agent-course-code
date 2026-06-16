@@ -1,17 +1,15 @@
 /*
  * @Date: 2026-05-08 11:39:52
  * @LastEditors: zhujinyi
- * @LastEditTime: 2026-05-08 12:07:08
+ * @LastEditTime: 2026-06-08 18:49:55
  */
-import "dotenv/config";
-import { ChatOpenAI } from "@langchain/openai";
 import { InMemoryChatMessageHistory } from "@langchain/core/chat_history";
 import {
-  HumanMessage,
-  SystemMessage,
   AIMessage,
+  HumanMessage,
   trimMessages,
 } from "@langchain/core/messages";
+import "dotenv/config";
 import { getEncoding } from "js-tiktoken";
 
 // 1.按消息数量截断
@@ -87,19 +85,18 @@ async function tokenCountTruncation() {
   let allMessages = await history.getMessages();
 
   //   使用 trimMessages API: 使用js-tiktoken计算消息总 token 数量
-  const truncatedMessages = await trimMessages(allMessages, {
+  const trimmedMessages = await trimMessages(allMessages, {
     maxTokens,
-    tokenCounter: (messages) => countTokens(messages, encoder),
+    tokenCounter: async (messages) => countTokens(messages, encoder),
     strategy: "last", // 保留最后一条消息
   });
 
-  //   计算试剂 token 数用于显示
-  const totalTokens = countTokens(truncatedMessages, encoder);
-  console.log(`总 token 数：${totalTokens / maxTokens}`);
-  console.log("截断后的消息数量：", truncatedMessages.length);
+  //   计算实际 token 数用于显示
+  const totalTokens = countTokens(trimmedMessages, encoder);
+  console.log(`总 token 数：${totalTokens} / ${maxTokens}`);
+  console.log(`保留消息数量：${trimmedMessages.length}`);
   console.log(
-    "截断后的消息：",
-    truncatedMessages
+    `保留消息：${trimmedMessages
       .map((message) => {
         const content =
           typeof message.content === "string"
@@ -108,7 +105,7 @@ async function tokenCountTruncation() {
         const tokenLength = encoder.encode(content).length;
         return `${message.constructor.name}(${tokenLength} tokens): ${content}`;
       })
-      .join("\n"),
+      .join("\n")}`,
   );
 }
 

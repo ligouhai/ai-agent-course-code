@@ -1,12 +1,12 @@
 /*
  * @Date: 2026-05-08 11:01:13
  * @LastEditors: zhujinyi
- * @LastEditTime: 2026-05-08 11:21:43
+ * @LastEditTime: 2026-06-08 18:33:21
  */
-import "dotenv/config";
-import { ChatOpenAI } from "@langchain/openai";
 import { InMemoryChatMessageHistory } from "@langchain/core/chat_history";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { ChatOpenAI } from "@langchain/openai";
+import "dotenv/config";
 
 const model = new ChatOpenAI({
   modelName: process.env.MODEL_NAME,

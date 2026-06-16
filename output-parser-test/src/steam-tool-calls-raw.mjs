@@ -1,10 +1,10 @@
 /*
  * @Date: 2026-05-15 17:31:21
  * @LastEditors: zhujinyi
- * @LastEditTime: 2026-05-18 18:03:28
+ * @LastEditTime: 2026-06-15 18:15:39
  */
-import 'dotenv/config';
 import { ChatOpenAI } from '@langchain/openai';
+import 'dotenv/config';
 import { z } from 'zod';
 
 const model = new ChatOpenAI({
@@ -46,7 +46,7 @@ try {
     chunkIndex++;
     console.log(chunk);
     if (chunk.tool_call_chunks && chunk.tool_call_chunks.length > 0) {
-      // process.stdout.write(chunk.tool_call_chunks[0].args);
+      process.stdout.write(chunk.tool_call_chunks[0].args);
     }
   }
 

@@ -1,10 +1,10 @@
 /*
  * @Date: 2026-05-15 16:44:21
  * @LastEditors: zhujinyi
- * @LastEditTime: 2026-05-26 10:15:12
+ * @LastEditTime: 2026-06-15 17:55:09
  */
-import 'dotenv/config';
 import { ChatOpenAI } from '@langchain/openai';
+import 'dotenv/config';
 
 const model = new ChatOpenAI({
   modelName: process.env.MODEL_NAME,
@@ -17,7 +17,7 @@ const model = new ChatOpenAI({
 
 const prompt = '详细介绍下莫扎特的信息。';
 
-console.log('普通流式输出延时（无结构化）\n');
+console.log('普通流式输出演示（无结构化）\n');
 
 try {
   const stream = await model.stream(prompt);
@@ -33,8 +33,8 @@ try {
 
     process.stdout.write(content);
   }
-  console.log('\n\n 共接收了 ${chunkCount} 个块');
-  console.log('完整内容长度：', fullContent.length);
+  console.log(`\n\n 共接收了 ${chunkCount} 个块`);
+  console.log(`完整内容长度：${fullContent.length}字符`);
 } catch (error) {
   console.error('调用大模型失败：', error.message);
 }
