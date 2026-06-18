@@ -1,17 +1,15 @@
 /*
  * @Date: 2026-05-21 14:54:19
  * @LastEditors: zhujinyi
- * @LastEditTime: 2026-05-25 15:14:49
+ * @LastEditTime: 2026-06-17 15:42:04
  */
-import 'dotenv/config';
+import { ChatAlibabaTongyi } from '@langchain/community/chat_models/alibaba_tongyi';
 import { StructuredOutputParser } from '@langchain/core/output_parsers';
 import { PromptTemplate } from '@langchain/core/prompts';
-import { ChatOpenAI } from '@langchain/openai';
-import { z } from 'zod';
 import { RunnableSequence } from '@langchain/core/runnables';
-import { ChatAlibabaTongyi } from '@langchain/community/chat_models/alibaba_tongyi';
-
-import { Milvus } from '@langchain/community/vectorstores/milvus';
+import { ChatOpenAI } from '@langchain/openai';
+import 'dotenv/config';
+import { z } from 'zod';
 
 ChatAlibabaTongyi.form;
 const model = new ChatOpenAI({
@@ -35,8 +33,8 @@ const promptTemplate = PromptTemplate.fromTemplate(
   `将以下文本翻译成英文，然后总结为3个关键词。\n\n文本：{text}\n\n{format_instructions}`
 );
 
-// const chain = RunnableSequence.from([promptTemplate, model, outputParser]);
-const chain = promptTemplate.pipe(model).pipe(outputParser);
+const chain = RunnableSequence.from([promptTemplate, model, outputParser]);
+// const chain = promptTemplate.pipe(model).pipe(outputParser);
 
 const input = {
   text: 'LangChain 是一个强大的 AI 应用开发框架',

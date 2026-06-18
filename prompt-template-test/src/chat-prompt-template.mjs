@@ -1,11 +1,11 @@
 /*
  * @Date: 2026-05-19 16:10:04
  * @LastEditors: zhujinyi
- * @LastEditTime: 2026-05-19 16:14:15
+ * @LastEditTime: 2026-06-17 11:23:19
  */
-import 'dotenv/config';
-import { ChatOpenAI } from '@langchain/openai';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
+import { ChatOpenAI } from '@langchain/openai';
+import 'dotenv/config';
 
 const model = new ChatOpenAI({
   model: process.env.MODEL_NAME,
@@ -62,7 +62,9 @@ const chatMessages = await chatPrompt.formatMessages({
 console.log('ChatPromptTemplate 生成的消息');
 console.log(chatMessages);
 
-const response = await model.invoke(chatMessages);
+const response = await model.stream(chatMessages);
 
 console.log('\nAI 生成的周报草稿');
-console.log(response.content);
+for await (const chunk of response) {
+  process.stdout.write(chunk.content);
+}

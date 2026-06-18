@@ -1,14 +1,13 @@
 /*
  * @Date: 2026-05-19 10:23:24
  * @LastEditors: zhujinyi
- * @LastEditTime: 2026-05-19 16:02:47
+ * @LastEditTime: 2026-06-17 11:54:50
  */
-import 'dotenv/config';
-import { ChatOpenAI } from '@langchain/openai';
 import {
-  PromptTemplate,
-  PipelinePromptTemplate
+  PipelinePromptTemplate,
+  PromptTemplate
 } from '@langchain/core/prompts';
+import 'dotenv/config';
 
 // A.人设模块
 export const personPrompt = PromptTemplate.fromTemplate(`
@@ -20,7 +19,7 @@ export const personPrompt = PromptTemplate.fromTemplate(`
 // B. 背景模块
 export const contextPrompt = PromptTemplate.fromTemplate(`
     公司名称：{company_name}
-    部门名称：{department_name}
+    团队名称：{team_name}
     直接汇报对象：{manager_name}
     本周时间范围：{week_range}
 
@@ -84,7 +83,7 @@ export const pipelinePrompt = new PipelinePromptTemplate({
   inputVariables: [
     'tone',
     'company_name',
-    'department_name',
+    'team_name',
     'manager_name',
     'week_range',
     'team_goal',
@@ -108,4 +107,4 @@ const pipelineFormatted = await pipelinePrompt.format({
 });
 
 console.log('PipelinePromptTemplate 组合后的 Prompt：');
-console.log(pipelineFormatted);
+// console.log(pipelineFormatted);

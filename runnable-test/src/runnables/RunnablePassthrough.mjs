@@ -1,7 +1,7 @@
 /*
  * @Date: 2026-05-21 15:24:09
  * @LastEditors: zhujinyi
- * @LastEditTime: 2026-05-21 15:31:43
+ * @LastEditTime: 2026-06-17 16:05:04
  */
 import 'dotenv/config';
 import {
@@ -35,6 +35,6 @@ const chain = RunnableSequence.from([
   })
 ]);
 
-const input = '神说要有光';
+const input = 'hello world';
 const result = await chain.invoke(input);
 console.log(result);

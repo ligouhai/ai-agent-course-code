@@ -1,7 +1,7 @@
 /*
  * @Date: 2026-05-18 15:30:36
  * @LastEditors: zhujinyi
- * @LastEditTime: 2026-05-18 16:50:26
+ * @LastEditTime: 2026-06-16 18:10:35
  */
 import mysql from 'mysql2/promise';
 
@@ -15,11 +15,13 @@ async function main() {
   });
 
   try {
+    // 创建 database
     await connection.query(
       `CREATE DATABASE IF NOT EXISTS hello CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci`
     );
     await connection.query(`USE hello`);
 
+    // 创建好友表
     await connection.query(`
         CREATE TABLE IF NOT EXISTS friends (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -33,19 +35,19 @@ async function main() {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 插入 DEMO 数据
+    // 插入 demo 数据
     const insertSql = `
         INSERT INTO friends (name, gender, birth_date, company, title, phone, wechat) VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
     const values = [
-      '张三',
-      '男',
-      '1990-01-01',
-      '字节跳动',
-      '产品经理/产品总监',
-      '13800138000',
-      'zhangsan'
+      '张三', // 姓名
+      '男', // 性别
+      '1990-01-01', // 出生日期
+      '字节跳动', // 公司
+      '产品经理/产品总监', // 职位
+      '13800138000', // 当前手机号
+      'zhangsan' // 微信号
     ];
     const [result] = await connection.query(insertSql, values);
     console.log(

@@ -1,7 +1,7 @@
 /*
  * @Date: 2026-05-21 15:34:21
  * @LastEditors: zhujinyi
- * @LastEditTime: 2026-05-21 15:35:25
+ * @LastEditTime: 2026-06-17 16:09:58
  */
 import 'dotenv/config';
 import {
@@ -12,8 +12,13 @@ import {
 
 const toUpperCase = RunnableLambda.from((input) => input.toUpperCase());
 const addGreeting = RunnableLambda.from((input) => `Hello, ${input}`);
+const addGoodbye = RunnableLambda.from((input) => `Goodbye, ${input}`);
 
-const processItem = RunnableSequence.from([toUpperCase, addGreeting]);
+const processItem = RunnableSequence.from([
+  toUpperCase,
+  addGreeting,
+  addGoodbye
+]);
 
 const chain = new RunnableEach({
   bound: processItem
