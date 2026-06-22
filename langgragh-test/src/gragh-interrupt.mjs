@@ -1,0 +1,79 @@
+/*
+ * @Date: 2026-06-22 10:06:04
+ * @LastEditors: zhujinyi
+ * @LastEditTime: 2026-06-22 10:26:10
+ */
+import {
+  Annotation,
+  Command,
+  END,
+  MemorySaver,
+  START,
+  StateGraph,
+  interrupt,
+} from "@langchain/langgraph";
+import { createInterface } from "node:readline/promises";
+
+const StateAnnotation = Annotation.Root({
+  actionSummary: Annotation({
+    reducer: (_prev, next) => next,
+    default: () => "",
+  }),
+  userInput: Annotation({
+    reducer: (_prev, next) => next,
+    default: () => "",
+  }),
+});
+
+// 展示一笔待确认的转账
+const showTransfer = () => ({
+  actionSummary: "向张三转账 ¥100（模拟，不会真扣款）",
+});
+
+// 停在这里等人输入：resume 的值会写进 userInput
+const waitForUserInput = (state) => {
+  const text = interrupt({
+    hint: "终端里输入[确认]或备注后回车，图才会继续",
+    actionSummary: state.actionSummary,
+  });
+  return {
+    userInput: text,
+  };
+};
+
+const graph = new StateGraph(StateAnnotation)
+  .addNode("showTransfer", showTransfer)
+  .addNode("waitForUserInput", waitForUserInput)
+  .addEdge(START, "showTransfer")
+  .addEdge("showTransfer", "waitForUserInput")
+  .addEdge("waitForUserInput", END)
+  .compile({ checkpointer: new MemorySaver() });
+
+// 导出为 Mermaid：可复制到 https://mermaid.live 或Markdown 的```mermaid`` `代码块里
+const drawable = await graph.getGraphAsync();
+const mermaid = drawable.drawMermaid({ withStyle: true });
+console.log(mermaid);
+
+const config = {
+  configurable: {
+    thread_id: "interrupt-demo",
+  },
+};
+
+const paused = await graph.invoke({}, config);
+console.log("\n 待你确认：\n", paused.__interrupt__?.[0]?.value);
+
+const rl = createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+const line = (await rl.question("> ")).trim();
+await rl.close();
+
+if (!line) {
+  console.error("未输入，退出");
+  process.exit(1);
+}
+
+const done = await graph.invoke(new Command({ resume: line }), config);
+console.log("结果：", done);
