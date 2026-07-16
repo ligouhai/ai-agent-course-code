@@ -1,0 +1,30 @@
+{
+  "todos": [
+    {
+      "content": "将用户问题保存至 /workspace/sources/question.txt",
+      "status": "in_progress"
+    },
+    {
+      "content": "规划调研任务：明确需获取的2023年省级GDP数据字段（总量、同比增速）、计算要求（六省综合、各省占比、增速排序）",
+      "status": "pending"
+    },
+    {
+      "content": "执行联网调研：使用 web-research 技能，聚焦国家统计局官网及权威统计年鉴，检索2023年分省GDP数据",
+      "status": "pending"
+    },
+    {
+      "content": "委派调研员子 Agent 并行获取前6省份GDP总量与增速原始数据",
+      "status": "pending"
+    },
+    {
+      "content": "委派分析师子 Agent 计算六省GDP总和、各省占全国比重、按增速降序排列",
+      "status": "pending"
+    },
+    {
+      "content": "主 Agent 撰写调研简报草稿：结构化呈现数据、计算结果与关键发现",
+      "status": "pending"
+    },
+    { "content": "委派编辑子 Agent 审阅草稿并反馈", "status": "pending" },
+    { "content": "根据编辑反馈修订草稿并定稿", "status": "pending" }
+  ]
+}
