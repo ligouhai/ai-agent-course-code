@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OSS 文件上传</title>
+    <script src="https://unpkg.com/axios@1.6.5/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <input id="fileInput" type="file" />
+
+    <script>
+      const fileInput = document.getElementById("fileInput");
+
+      async function getOSSInfo() {
+        const { data } = await axios.get("/api/oss-post-policy");
+        return data;
+      }
+
+      fileInput.onchange = async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        try {
+          const ossInfo = await getOSSInfo();
+          const formData = new FormData();
+
+          formData.append("key", file.name);
+          formData.append("OSSAccessKeyId", ossInfo.OSSAccessKeyId);
+          formData.append("policy", ossInfo.policy);
+          formData.append("signature", ossInfo.Signature);
+          formData.append("success_action_status", "200");
+          formData.append("file", file);
+
+          const res = await axios.post(ossInfo.host, formData);
+          if (res.status === 200) {
+            const img = document.createElement("img");
+            img.src = `${ossInfo.host}/${file.name}`;
+            img.style.maxWidth = "300px";
+            document.body.append(img);
+            alert("上传成功");
+          }
+        } catch (err) {
+          console.error(err);
+          alert("上传失败：" + (err.response?.data ?? err.message));
+        }
+      };
+    </script>
+  </body>
+</html>
